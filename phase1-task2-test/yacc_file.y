@@ -6,9 +6,10 @@
 int yylex();
 void yyerror(char *);
 void print_table();
-void insert(char* token,char type,char* value,char* datatype);
+void insert(char* token,char type,char* value,char* datatype,int line_no);
 extern FILE *yyin;
 extern char *yytext;
+extern int yylineno;
 
 typedef struct symbol_table
 {
@@ -16,6 +17,7 @@ typedef struct symbol_table
     char type;
     char *value;
     char *datatype;
+    int line_no;
 }symbol_table_node;
 
 int no_of_entries = 0;
@@ -34,8 +36,8 @@ START
       ;
 
 MAIN
-      : VOID MAINTOK BODY {insert($2,'F',NULL,"void");}
-      | INT MAINTOK BODY  {insert($2,'F',NULL,"int");}
+      : VOID MAINTOK '(' ')' BODY {insert($2,'F',NULL,"void",@1.last_line);}
+      | INT MAINTOK '(' ')' BODY  {insert($2,'F',NULL,"int",@1.last_line);}
       ;
 
 BODY
@@ -106,9 +108,9 @@ COND
 
 ASSIGN_EXPR
       : ID T_eq ARITH_EXPR
-      | TYPE ID T_eq ARITH_EXPR {insert($2,'I',$4,$1);}
-      | TYPE ID {insert($2,'I',NULL,$1);}
-      | TYPE ID'['']' T_eq STRING {insert($2,'I',$6,$1);}
+      | TYPE ID T_eq ARITH_EXPR {insert($2,'I',$4,$1,@1.last_line);}
+      | TYPE ID {insert($2,'I',NULL,$1,@1.last_line);}
+      | TYPE ID'['']' T_eq STRING {insert($2,'I',$6,$1,@1.last_line);}
       ;
 
 ARITH_EXPR
@@ -178,7 +180,7 @@ void yyerror(char* s){
   exit(0);
 }
 
-void insert(char* token,char type,char* value,char* datatype)
+void insert(char* token,char type,char* value,char* datatype,int line_no)
 {
       //to make sure multiple declarations are not allowed
       for(int i=0;i<no_of_entries;++i)
@@ -206,10 +208,11 @@ void insert(char* token,char type,char* value,char* datatype)
             symbol_table[no_of_entries].value=temp;
 	}
         
-    if(datatype==NULL)
-        symbol_table[no_of_entries].datatype=NULL;
-    else
-        symbol_table[no_of_entries].datatype=datatype;
+      if(datatype==NULL)
+            symbol_table[no_of_entries].datatype=NULL;
+      else
+            symbol_table[no_of_entries].datatype=datatype;
+      symbol_table[no_of_entries].line_no = line_no;
         
     no_of_entries++;
 }
@@ -218,10 +221,10 @@ void print_table()
 {
 	printf("Number of entries in the symbol table = %d\n\n",no_of_entries);
     printf("-----------------------------------Symbol Table-----------------------------------\n\n");
-    printf("S.No\t Token_name\t Type\t DataType\t Value\n");
+    printf("S.No\t Token_name\t Type\t DataType\t Value\t LineNumber\n");
 	for(int i=0;i<no_of_entries;++i)
 	{
-		printf("%d\t %s\t\t %c\t %s\t\t %s\n",i+1,symbol_table[i].name,symbol_table[i].type,symbol_table[i].datatype,symbol_table[i].value);
+		printf("%d\t %s\t\t %c\t %s\t\t %s\t %d\n",i+1,symbol_table[i].name,symbol_table[i].type,symbol_table[i].datatype,symbol_table[i].value,symbol_table[i].line_no);
 	}
 }
 

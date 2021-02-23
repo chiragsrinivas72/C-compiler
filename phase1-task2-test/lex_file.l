@@ -5,11 +5,13 @@
     int count=1;
     static void single_line_comment(void);
     static void multi_line_comment(void);
+    #define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno;
 %}
 
 alpha [A-Za-z_]
 digit [0-9]
 floating [+-]?([0-9]*[.])?[0-9]+
+%option yylineno
 
 %%
 "//"    {single_line_comment();}
@@ -29,7 +31,7 @@ floating [+-]?([0-9]*[.])?[0-9]+
 "char" {yylval = strdup(yytext);return CHAR;}
 "void" {yylval = strdup(yytext);return VOID;}
 "#include" {yylval = strdup(yytext);return INCLUDE;}
-"main()" {yylval = strdup(yytext);return MAINTOK;}
+"main" {yylval = strdup(yytext);return MAINTOK;}
 {digit}+    {yylval = strdup(yytext);return NUM;}
 {digit}+.{digit}+ {yylval = strdup(yytext);return FLOAT;}
 {alpha}({alpha}|{digit})* {yylval = strdup(yytext);return ID;}

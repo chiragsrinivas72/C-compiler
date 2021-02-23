@@ -1,13 +1,7 @@
 #include <stdio.h>
 void main()
 {
-        // int a = 4 * 5 / 2;
-        // int b = a * 7;
-
-        // int c = a / b + 8 / 4;
-        // int d = a + b * c;
-        // b = 100 * 100 - d + c;
-
-        char s[] = "hi"; //no error
+        int a = 10;
+        //char s[] = "hi"; //no error
         //char s[10] = "hi"; //gives syntax error
 }
