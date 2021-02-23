@@ -55,6 +55,11 @@ floating [+-]?([0-9]*[.])?[0-9]+
 "!"     {yylval = strdup(yytext);return T_neq;}
 "||"    {yylval = strdup(yytext);return T_or;}
 "&&"    {yylval = strdup(yytext);return T_and;}
+"[]"    {yylval = strdup(yytext);return T_dims;}
+"("     {yylval = strdup(yytext);return T_op;}
+")"     {yylval = strdup(yytext);return T_cp;}
+"["     {yylval = strdup(yytext);return T_ob;}
+"]"     {yylval = strdup(yytext);return T_cb;}
 
 .    return yytext[0];
 
@@ -93,3 +98,9 @@ static void multi_line_comment(void)
 int yywrap(void){
     return 1;
 }
+// "[]"    {yylval = strdup(yytext);return T_dims;}
+// "["     {yylval = strdup(yytext);return T_ob;}
+// "]"     {yylval = strdup(yytext);return T_cb;}
+// #define T_dims 294
+// #define T_ob 295
+// #define T_cb 296
