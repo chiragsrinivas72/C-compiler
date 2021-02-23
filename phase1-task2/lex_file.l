@@ -3,15 +3,25 @@
     #include<stdio.h>
     #include "y.tab.h"
     int line = 0;
+    int count=1;
     #define YYSTYPE char *
     #define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno;
+    static void single_line_comment(void);
+    static void multi_line_comment(void);
 %}
 
 alpha [A-Za-z_]
 digit [0-9]
+floating [+-]?([0-9]*[.])?[0-9]+
 %option yylineno
 %%
-[ \t\n] {yylval = strdup(yytext);}
+"//"    {single_line_comment();}
+"/*"    { multi_line_comment(); }
+[ \t] {yylval = strdup(yytext);}
+[ \n] {yylval = strdup(yytext); count+=1;}
+"switch"    {yylval = strdup(yytext);return SWITCH;}
+"case"  {yylval = strdup(yytext); return CASE;}
+"default"   {yylval = strdup(yytext); return DEFAULT;}
 "if" {yylval = strdup(yytext);return IF;}
 "else" {yylval = strdup(yytext);return ELSE;}
 "printf" {yylval = strdup(yytext);return PRINTF;}
@@ -27,6 +37,7 @@ digit [0-9]
 {digit}+.{digit}+ {yylval = strdup(yytext);return FLOAT;}
 {alpha}({alpha}|{digit})* {yylval = strdup(yytext);return ID;}
 {alpha}({alpha}|{digit})*"\.h"?  {yylval = strdup(yytext);return H;}
+{floating} {yylval = strdup(yytext);return FLNUM;}
 \".*\"  {yylval = strdup(yytext);return STRING;}
 \'.\'   {yylval = strdup(yytext);return CHARACTER;}
 "<"     {yylval = strdup(yytext);return T_lt;}
@@ -50,3 +61,38 @@ digit [0-9]
 .    return yytext[0];
 
 %%
+
+static void single_line_comment(void)
+{
+    char c;
+    while((c=input()) !='\n')
+    {
+        ;
+    }
+    count++;
+}
+
+static void multi_line_comment(void)
+{
+    int c;
+    int flag=0;
+    while ((c = input()) != 0)
+    {
+        if (c == '*')
+        {
+            c=input();
+            if (c == '/')
+                return;
+
+            if (c == 0)
+                break;
+        }
+        if(c==10)
+            count++;
+    }
+    yyerror("Unfinished comment");
+}
+
+int yywrap(void){
+    return 1;
+}
