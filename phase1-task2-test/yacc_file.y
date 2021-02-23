@@ -12,7 +12,7 @@ extern char *yytext;
 
 typedef struct symbol_table
 {
-    char name[32];
+    char name[31];
     char type;
     char *value;
     char *datatype;
@@ -26,7 +26,7 @@ symbol_table_node symbol_table[100];
 
 %%
 S
-      : START {printf("No syntax errors detected!.\n");}
+      : START {printf("No syntax errors detected!\n");}
       ;
 
 START
@@ -34,8 +34,8 @@ START
       ;
 
 MAIN
-      : VOID MAINTOK BODY {insert($2,'F',NULL,"VOID");}
-      | INT MAINTOK BODY  {insert($2,'F',NULL,"INT");}
+      : VOID MAINTOK BODY {insert($2,'F',NULL,"void");}
+      | INT MAINTOK BODY  {insert($2,'F',NULL,"int");}
       ;
 
 BODY
@@ -108,7 +108,7 @@ ASSIGN_EXPR
       : ID T_eq ARITH_EXPR
       | TYPE ID T_eq ARITH_EXPR {insert($2,'I',$4,$1);}
       | TYPE ID {insert($2,'I',NULL,$1);}
-      | TYPE ID'['']' T_eq STRING {insert($2,'I',$4,$1);}
+      | TYPE ID'['']' T_eq STRING {insert($2,'I',$6,$1);}
       ;
 
 ARITH_EXPR
@@ -174,16 +174,27 @@ un_boolop
 #include "lex.yy.c"
 
 void yyerror(char* s){
-  printf("Line %d %s \n",count,s);
+  printf("Line %d - %s \n",count,s);
   exit(0);
 }
 
 void insert(char* token,char type,char* value,char* datatype)
 {
+      //to make sure multiple declarations are not allowed
+      for(int i=0;i<no_of_entries;++i)
+      {
+            if(strcmp(symbol_table[i].name,token)==0)
+            {
+                  yyerror("Multiple declarations not allowed");
+            }
+      }
+
+      //to take the first 32 characters if the length of indentifier > 32
 	int n = strlen(token);
-	if(n>32)
-		n=32;
+	if(n>31)
+		n=31;
 	strncpy(symbol_table[no_of_entries].name,token,32);
+
 	symbol_table[no_of_entries].type=type;
 
     if(value==NULL)
@@ -192,7 +203,7 @@ void insert(char* token,char type,char* value,char* datatype)
 	{
 		char* temp = malloc(strlen(value));
 		strcpy(temp,value);
-        symbol_table[no_of_entries].value=temp;
+            symbol_table[no_of_entries].value=temp;
 	}
         
     if(datatype==NULL)

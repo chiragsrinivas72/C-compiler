@@ -7,5 +7,7 @@ void main()
         // int c = a / b + 8 / 4;
         // int d = a + b * c;
         // b = 100 * 100 - d + c;
-        int a = 10;
+
+        char s[] = "hi"; //no error
+        //char s[10] = "hi"; //gives syntax error
 }

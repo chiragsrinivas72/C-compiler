@@ -81,7 +81,7 @@ extern char *yytext;
 
 typedef struct symbol_table
 {
-    char name[32];
+    char name[31];
     char type;
     char *value;
     char *datatype;
@@ -1503,19 +1503,19 @@ yyreduce:
     {
   case 2:
 #line 29 "yacc_file.y"
-              {printf("No syntax errors detected!.\n");}
+              {printf("No syntax errors detected!\n");}
 #line 1508 "y.tab.c"
     break;
 
   case 4:
 #line 37 "yacc_file.y"
-                          {insert(yyvsp[-1],'F',NULL,"VOID");}
+                          {insert(yyvsp[-1],'F',NULL,"void");}
 #line 1514 "y.tab.c"
     break;
 
   case 5:
 #line 38 "yacc_file.y"
-                          {insert(yyvsp[-1],'F',NULL,"INT");}
+                          {insert(yyvsp[-1],'F',NULL,"int");}
 #line 1520 "y.tab.c"
     break;
 
@@ -1533,7 +1533,7 @@ yyreduce:
 
   case 42:
 #line 111 "yacc_file.y"
-                                  {insert(yyvsp[-4],'I',yyvsp[-2],yyvsp[-5]);}
+                                  {insert(yyvsp[-4],'I',yyvsp[0],yyvsp[-5]);}
 #line 1538 "y.tab.c"
     break;
 
@@ -1776,16 +1776,27 @@ yyreturn:
 #include "lex.yy.c"
 
 void yyerror(char* s){
-  printf("Line %d %s \n",count,s);
+  printf("Line %d - %s \n",count,s);
   exit(0);
 }
 
 void insert(char* token,char type,char* value,char* datatype)
 {
+      //to make sure multiple declarations are not allowed
+      for(int i=0;i<no_of_entries;++i)
+      {
+            if(strcmp(symbol_table[i].name,token)==0)
+            {
+                  yyerror("Multiple declarations not allowed");
+            }
+      }
+
+      //to take the first 32 characters if the length of indentifier > 32
 	int n = strlen(token);
-	if(n>32)
-		n=32;
+	if(n>31)
+		n=31;
 	strncpy(symbol_table[no_of_entries].name,token,32);
+
 	symbol_table[no_of_entries].type=type;
 
     if(value==NULL)
@@ -1794,7 +1805,7 @@ void insert(char* token,char type,char* value,char* datatype)
 	{
 		char* temp = malloc(strlen(value));
 		strcpy(temp,value);
-        symbol_table[no_of_entries].value=temp;
+            symbol_table[no_of_entries].value=temp;
 	}
         
     if(datatype==NULL)
