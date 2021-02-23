@@ -26,7 +26,7 @@ symbol_table_node symbol_table[100];
 
 %%
 S
-      : START {printf("Input accepted.\n");}
+      : START {printf("No syntax errors detected!.\n");}
       ;
 
 START
@@ -180,7 +180,10 @@ void yyerror(char* s){
 
 void insert(char* token,char type,char* value,char* datatype)
 {
-	strcpy(symbol_table[no_of_entries].name,token);
+	int n = strlen(token);
+	if(n>32)
+		n=32;
+	strncpy(symbol_table[no_of_entries].name,token,32);
 	symbol_table[no_of_entries].type=type;
 
     if(value==NULL)
@@ -202,16 +205,12 @@ void insert(char* token,char type,char* value,char* datatype)
 
 void print_table()
 {
-	printf("hi");
+	printf("Number of entries in the symbol table = %d\n\n",no_of_entries);
+    printf("-----------------------------------Symbol Table-----------------------------------\n\n");
+    printf("S.No\t Token_name\t Type\t DataType\t Value\n");
 	for(int i=0;i<no_of_entries;++i)
 	{
-		printf("Number of entries in the symbol table = %d\n\n",no_of_entries);
-    	printf("-----------------------------------Symbol Table-----------------------------------\n\n");
-    	printf("S.No\t  Token_name\t  Type\t  DataType\t  Value\n");
-		for(int i=0;i<no_of_entries;++i)
-		{
-			printf("%d\t  ,%s\t  ,%c\t  ,%s\t  ,%s\n",i+1,symbol_table[i].name,symbol_table[i].type,symbol_table[i].datatype,symbol_table[i].value);
-		}
+		printf("%d\t %s\t\t %c\t %s\t\t %s\n",i+1,symbol_table[i].name,symbol_table[i].type,symbol_table[i].datatype,symbol_table[i].value);
 	}
 }
 

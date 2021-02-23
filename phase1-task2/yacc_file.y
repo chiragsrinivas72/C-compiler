@@ -159,7 +159,6 @@ un_boolop
       : T_not {lookup($1,@1.last_line,'O',NULL,NULL);}
       ;
 
-
 %%
 
 int main(int argc,char *argv[])

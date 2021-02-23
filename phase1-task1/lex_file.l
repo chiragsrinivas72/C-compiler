@@ -67,7 +67,6 @@ static void single_line_comment(void)
 static void multi_line_comment(void)
 {
     int c;
-    int flag=0;
     while ((c = input()) != 0)
     {
         if (c == '*')
