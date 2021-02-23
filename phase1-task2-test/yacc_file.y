@@ -6,6 +6,8 @@
 int yylex();
 void yyerror(char *);
 void print_table();
+void increment_scope();
+void decrement_scope();
 void insert(char* token,char type,char* value,char* datatype,int line_no);
 extern FILE *yyin;
 extern char *yytext;
@@ -18,6 +20,7 @@ typedef struct symbol_table
     char *value;
     char *datatype;
     int line_no;
+    int scope;
 }symbol_table_node;
 
 int no_of_entries = 0;
@@ -25,7 +28,7 @@ symbol_table_node symbol_table[100];
 int scope = 0;
 
 %}
-%token ID NUM CHARACTER FLNUM T_lt T_gt T_lteq T_gteq T_neq T_eqeq T_pl T_min T_mul T_div T_and T_or T_incr T_decr T_not T_eq INT CHAR FLOAT VOID H MAINTOK INCLUDE BREAK CONTINUE IF ELSE PRINTF STRING SWITCH CASE DEFAULT  T_dims T_op T_cp T_ob T_cb
+%token ID NUM CHARACTER FLNUM T_lt T_gt T_lteq T_gteq T_neq T_eqeq T_pl T_min T_mul T_div T_and T_or T_incr T_decr T_not T_eq INT CHAR FLOAT VOID H MAINTOK INCLUDE BREAK CONTINUE IF ELSE PRINTF STRING SWITCH CASE DEFAULT  T_dims T_op T_cp T_ob T_cb T_cop T_ccp T_comma
 
 %%
 S
@@ -42,7 +45,7 @@ MAIN
       ;
 
 BODY
-      : '{' C '}'
+      : COP C CCP
       ;
 
 C
@@ -59,7 +62,7 @@ LOOPS
       ;
 
 STMT_SWITCH	
-      : SWITCH T_op COND T_cp '{' SWITCHBODY '}'
+      : SWITCH T_op COND T_cp COP SWITCHBODY CCP
 	;
 SWITCHBODY	
       : CASES   
@@ -84,10 +87,14 @@ DE 	: BREAK ';'
 	;
 
 LOOPBODY
-  	  : '{' C '}'
+  	  : COP C CCP
   	  | ';'
   	  | statement ';'
   	  ;
+COP   : T_cop {increment_scope();}
+      ;
+
+CCP   : T_ccp {decrement_scope();}
 
 statement
       : ASSIGN_EXPR
@@ -177,17 +184,25 @@ un_boolop
 
 #include "lex.yy.c"
 
-void yyerror(char* s){
+void yyerror(char* s)
+{
   printf("Line %d - %s \n",count,s);
   exit(0);
 }
-
+void increment_scope()
+{
+      scope+=1;
+}
+void decrement_scope()
+{
+      scope-=1;
+}
 void insert(char* token,char type,char* value,char* datatype,int line_no)
 {
       //to make sure multiple declarations are not allowed
       for(int i=0;i<no_of_entries;++i)
       {
-            if(strcmp(symbol_table[i].name,token)==0)
+            if(symbol_table[i].scope == scope && strcmp(symbol_table[i].name,token)==0)
             {
                   yyerror("Multiple declarations not allowed");
             }
@@ -215,6 +230,7 @@ void insert(char* token,char type,char* value,char* datatype,int line_no)
       else
             symbol_table[no_of_entries].datatype=datatype;
       symbol_table[no_of_entries].line_no = line_no;
+      symbol_table[no_of_entries].scope =scope;
         
     no_of_entries++;
 }
@@ -223,10 +239,10 @@ void print_table()
 {
 	printf("Number of entries in the symbol table = %d\n\n",no_of_entries);
     printf("-----------------------------------Symbol Table-----------------------------------\n\n");
-    printf("S.No\t Token_name\t Type\t DataType\t Value\t LineNumber\n");
+    printf("S.No\t Token_name\t Type\t DataType\t Value\t\t LineNumber\t Scope\n");
 	for(int i=0;i<no_of_entries;++i)
 	{
-		printf("%d\t %s\t\t %c\t %s\t\t %s\t %d\n",i+1,symbol_table[i].name,symbol_table[i].type,symbol_table[i].datatype,symbol_table[i].value,symbol_table[i].line_no);
+		printf("%d\t %s\t\t %c\t %s\t\t %s\t\t %d\t\t %d\n",i+1,symbol_table[i].name,symbol_table[i].type,symbol_table[i].datatype,symbol_table[i].value,symbol_table[i].line_no,symbol_table[i].scope);
 	}
 }
 
