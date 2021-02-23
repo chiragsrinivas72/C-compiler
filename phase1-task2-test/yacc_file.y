@@ -22,9 +22,10 @@ typedef struct symbol_table
 
 int no_of_entries = 0;
 symbol_table_node symbol_table[100];
+int scope = 0;
 
 %}
-%token ID NUM CHARACTER FLNUM T_lt T_gt T_lteq T_gteq T_neq T_eqeq T_pl T_min T_mul T_div T_and T_or T_incr T_decr T_not T_eq INT CHAR FLOAT VOID H MAINTOK INCLUDE BREAK CONTINUE IF ELSE PRINTF STRING SWITCH CASE DEFAULT
+%token ID NUM CHARACTER FLNUM T_lt T_gt T_lteq T_gteq T_neq T_eqeq T_pl T_min T_mul T_div T_and T_or T_incr T_decr T_not T_eq INT CHAR FLOAT VOID H MAINTOK INCLUDE BREAK CONTINUE IF ELSE PRINTF STRING SWITCH CASE DEFAULT  T_dims T_op T_cp T_ob T_cb
 
 %%
 S
@@ -36,8 +37,8 @@ START
       ;
 
 MAIN
-      : VOID MAINTOK '(' ')' BODY {insert($2,'F',NULL,"void",@1.last_line);}
-      | INT MAINTOK '(' ')' BODY  {insert($2,'F',NULL,"int",@1.last_line);}
+      : VOID MAINTOK T_op T_cp BODY {insert($2,'F',NULL,"void",@1.last_line);}
+      | INT MAINTOK T_op T_cp BODY  {insert($2,'F',NULL,"int",@1.last_line);}
       ;
 
 BODY
@@ -52,13 +53,13 @@ C
       ;
 
 LOOPS
-      : IF '(' COND ')' LOOPBODY
-      | IF '(' COND ')' LOOPBODY ELSE LOOPBODY
+      : IF T_op COND T_cp LOOPBODY
+      | IF T_op COND T_cp LOOPBODY ELSE LOOPBODY
       | STMT_SWITCH
       ;
 
 STMT_SWITCH	
-      : SWITCH '(' COND ')' '{' SWITCHBODY '}'
+      : SWITCH T_op COND T_cp '{' SWITCHBODY '}'
 	;
 SWITCHBODY	
       : CASES   
@@ -99,10 +100,10 @@ COND
       : LIT RELOP LIT
       | LIT
       | LIT RELOP LIT bin_boolop LIT RELOP LIT
-      | un_boolop '(' LIT RELOP LIT ')'
+      | un_boolop T_op LIT RELOP LIT T_cp
       | un_boolop LIT RELOP LIT
       | LIT bin_boolop LIT
-      | un_boolop '(' LIT ')'
+      | un_boolop T_op LIT T_cp
       | un_boolop LIT
       ;
 
@@ -110,7 +111,8 @@ ASSIGN_EXPR
       : ID T_eq ARITH_EXPR
       | TYPE ID T_eq ARITH_EXPR {insert($2,'I',$4,$1,@1.last_line);}
       | TYPE ID {insert($2,'I',NULL,$1,@1.last_line);}
-      | TYPE ID'['']' T_eq STRING {insert($2,'I',$6,$1,@1.last_line);}
+      | TYPE ID T_dims T_eq STRING {insert($2,'I',$5,$1,@1.last_line);}
+      | TYPE ID T_ob NUM T_cb T_eq STRING {insert($2,'I',$7,$1,@1.last_line);}
       ;
 
 ARITH_EXPR
@@ -123,11 +125,11 @@ ARITH_EXPR
       ;
 
 TERNARY_EXPR
-      : '(' COND ')' '?' statement ':' statement
+      : T_op COND T_cp '?' statement ':' statement
       ;
 
 PRINT
-      : PRINTF '(' STRING ')'
+      : PRINTF T_op STRING T_cp
       ;
 LIT
       : ID
