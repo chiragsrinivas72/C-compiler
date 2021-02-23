@@ -60,6 +60,9 @@ floating [+-]?([0-9]*[.])?[0-9]+
 ")"     {yylval = strdup(yytext);return T_cp;}
 "["     {yylval = strdup(yytext);return T_ob;}
 "]"     {yylval = strdup(yytext);return T_cb;}
+"{"     {yylval = strdup(yytext);return T_cop;}
+"}"     {yylval = strdup(yytext);return T_ccp;}
+","     {yylval = strdup(yytext);return T_comma;}
 
 .    return yytext[0];
 
