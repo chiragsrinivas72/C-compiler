@@ -34,7 +34,6 @@ S
 
 START
       : INCLUDE T_lt H T_gt MAIN {lookup($1,@1.last_line,'K',NULL,NULL);}
-      | INCLUDE '\'' H '\'' MAIN {lookup($1,@1.last_line,'K',NULL,NULL);}
       ;
 
 MAIN
@@ -93,7 +92,7 @@ LOOPBODY
 
 statement
       : ASSIGN_EXPR 
-      | EXP 
+      | ARITH_EXPR
       | TERNARY_EXPR 
       | PRINT
       ;
@@ -110,31 +109,17 @@ COND
       ;
 
 ASSIGN_EXPR
-      : ID T_eq EXP {search_id($1,@1.last_line);lookup($2,@2.last_line,'O',NULL,NULL);update($1,@1.last_line,$3);}
-      | TYPE ID T_eq EXP {lookup($2,@1.last_line,'I',NULL,$1);lookup($3,@3.last_line,'O',NULL,NULL);update($2,@1.last_line,$4);}
+      : ID T_eq ARITH_EXPR {search_id($1,@1.last_line);lookup($2,@2.last_line,'O',NULL,NULL);update($1,@1.last_line,$3);}
+      | TYPE ID T_eq ARITH_EXPR {lookup($2,@1.last_line,'I',NULL,$1);lookup($3,@3.last_line,'O',NULL,NULL);update($2,@1.last_line,$4);}
+      | TYPE ID {lookup($2,@1.last_line,'I',NULL,$1);update($2,@1.last_line,);}
+      | TYPE ID'['']' T_eq STRING {lookup($2,@1.last_line,'I',NULL,$1);lookup($3,@3.last_line,'O',NULL,NULL);update($2,@1.last_line,$4);}
       ;
-
-EXP
-      : ADDSUB 
-      | EXP T_lt ADDSUB {lookup($2,@1.last_line,'O',NULL,NULL);sprintf($$,"%d",atoi($1)<atoi($3));} //printf("%s\n",$$);}
-      | EXP T_gt ADDSUB {lookup($2,@1.last_line,'O',NULL,NULL);sprintf($$,"%d",atoi($1)>atoi($3));} //printf("%s\n",$$);}
-      ;
-      
-ADDSUB
-      : TERM 
-      | EXP T_pl TERM {lookup($2,@1.last_line,'O',NULL,NULL);sprintf($$,"%d",atoi($1)+atoi($3));} //printf("%s\n",$$);}
-      | EXP T_min TERM {lookup($2,@1.last_line,'O',NULL,NULL);sprintf($$,"%d",atoi($1)-atoi($3));} //printf("%s\n",$$);}
-      ;
-
-TERM
-      : FACTOR 
-      | TERM T_mul FACTOR {lookup($2,@1.last_line,'O',NULL,NULL);sprintf($$,"%d",atoi($1)*atoi($3));} //printf("%s\n",$$);}
-      | TERM T_div FACTOR {lookup($2,@1.last_line,'O',NULL,NULL);sprintf($$,"%d",atoi($1)/atoi($3));} //printf("%s\n",$$);}
-      ;
-      
-FACTOR
-      : LIT 
-      | '(' EXP ')' 
+ARITH_EXPR
+      : LIT
+      | LIT bin_arop ARITH_EXPR
+      | LIT bin_boolop ARITH_EXPR
+      | LIT un_arop
+      | un_boolop ARITH_EXPR
       ;
       
 TERNARY_EXPR
@@ -148,11 +133,13 @@ PRINT
 LIT
       : ID {search_id($1,@1.last_line);sprintf($$,"%d",atoi(get_val($1)));}
       | NUM {lookup($1,@1.last_line,'C',NULL,NULL);}
+      | FLNUM {lookup($1,@1.last_line,'C',NULL,NULL);}
       ;
 TYPE
       : INT {lookup($1,@1.last_line,'K',NULL,NULL);}
       | CHAR {lookup($1,@1.last_line,'K',NULL,NULL);}
       | FLOAT {lookup($1,@1.last_line,'K',NULL,NULL);}
+      | CHARACTER {lookup($1,@1.last_line,'C',NULL,NULL);}
       ;
 RELOP
       : T_lt {lookup($1,@1.last_line,'O',NULL,NULL);}
@@ -166,11 +153,6 @@ RELOP
 bin_boolop
       : T_and {lookup($1,@1.last_line,'O',NULL,NULL);}
       | T_or {lookup($1,@1.last_line,'O',NULL,NULL);}
-      ;
-
-un_arop
-      : T_incr {lookup($1,@1.last_line,'O',NULL,NULL);}
-      | T_decr {lookup($1,@1.last_line,'O',NULL,NULL);}
       ;
 
 un_boolop
@@ -327,3 +309,27 @@ int get_val(char *token)
     exit(0);
   }
 }
+// line 125 after ARITH_EXPR
+// EXP
+//       : ADDSUB 
+//       | EXP T_lt ADDSUB {lookup($2,@1.last_line,'O',NULL,NULL);sprintf($$,"%d",atoi($1)<atoi($3));} //printf("%s\n",$$);}
+//       | EXP T_gt ADDSUB {lookup($2,@1.last_line,'O',NULL,NULL);sprintf($$,"%d",atoi($1)>atoi($3));} //printf("%s\n",$$);}
+//       ;
+      
+// ADDSUB
+//       : TERM 
+//       | EXP T_pl TERM {lookup($2,@1.last_line,'O',NULL,NULL);sprintf($$,"%d",atoi($1)+atoi($3));} //printf("%s\n",$$);}
+//       | EXP T_min TERM {lookup($2,@1.last_line,'O',NULL,NULL);sprintf($$,"%d",atoi($1)-atoi($3));} //printf("%s\n",$$);}
+//       ;
+
+// TERM
+//       : FACTOR 
+//       | TERM T_mul FACTOR {lookup($2,@1.last_line,'O',NULL,NULL);sprintf($$,"%d",atoi($1)*atoi($3));} //printf("%s\n",$$);}
+//       | TERM T_div FACTOR {lookup($2,@1.last_line,'O',NULL,NULL);sprintf($$,"%d",atoi($1)/atoi($3));} //printf("%s\n",$$);}
+//       ;
+      
+// FACTOR
+//       : LIT 
+//       | '(' EXP ')' 
+//       ;
+   
