@@ -84,7 +84,15 @@ extern int yydebug;
     STRING = 290,
     SWITCH = 291,
     CASE = 292,
-    DEFAULT = 293
+    DEFAULT = 293,
+    T_dims = 294,
+    T_op = 295,
+    T_cp = 296,
+    T_ob = 297,
+    T_cb = 298,
+    T_cop = 299,
+    T_ccp = 300,
+    T_comma = 301
   };
 #endif
 /* Tokens.  */
@@ -124,6 +132,14 @@ extern int yydebug;
 #define SWITCH 291
 #define CASE 292
 #define DEFAULT 293
+#define T_dims 294
+#define T_op 295
+#define T_cp 296
+#define T_ob 297
+#define T_cb 298
+#define T_cop 299
+#define T_ccp 300
+#define T_comma 301
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
