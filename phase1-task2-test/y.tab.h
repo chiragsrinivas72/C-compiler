@@ -35,10 +35,10 @@
    are private implementation details.  Do not rely on them.  */
 
 #ifndef YY_YY_Y_TAB_H_INCLUDED
-# define YY_YY_Y_TAB_H_INCLUDED
+#define YY_YY_Y_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+#define YYDEBUG 0
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -46,6 +46,56 @@ extern int yydebug;
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
+<<<<<<< HEAD
+#define YYTOKENTYPE
+enum yytokentype
+{
+  ID = 258,
+  NUM = 259,
+  CHARACTER = 260,
+  FLNUM = 261,
+  T_lt = 262,
+  T_gt = 263,
+  T_lteq = 264,
+  T_gteq = 265,
+  T_neq = 266,
+  T_eqeq = 267,
+  T_pl = 268,
+  T_min = 269,
+  T_mul = 270,
+  T_div = 271,
+  T_and = 272,
+  T_or = 273,
+  T_incr = 274,
+  T_decr = 275,
+  T_not = 276,
+  T_eq = 277,
+  INT = 278,
+  CHAR = 279,
+  FLOAT = 280,
+  VOID = 281,
+  H = 282,
+  MAINTOK = 283,
+  INCLUDE = 284,
+  BREAK = 285,
+  CONTINUE = 286,
+  IF = 287,
+  ELSE = 288,
+  PRINTF = 289,
+  STRING = 290,
+  SWITCH = 291,
+  CASE = 292,
+  DEFAULT = 293,
+  T_dims = 294,
+  T_op = 295,
+  T_cp = 296,
+  T_ob = 297,
+  T_cb = 298,
+  T_cop = 299,
+  T_ccp = 300,
+  T_comma = 301
+};
+=======
 # define YYTOKENTYPE
   enum yytokentype
   {
@@ -94,6 +144,7 @@ extern int yydebug;
     T_ccp = 300,
     T_comma = 301
   };
+>>>>>>> e0f15208ae0714f5e49e264cf51c85f61da4cd09
 #endif
 /* Tokens.  */
 #define ID 258
@@ -142,15 +193,14 @@ extern int yydebug;
 #define T_comma 301
 
 /* Value type.  */
-#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+#if !defined YYSTYPE && !defined YYSTYPE_IS_DECLARED
 typedef int YYSTYPE;
-# define YYSTYPE_IS_TRIVIAL 1
-# define YYSTYPE_IS_DECLARED 1
+#define YYSTYPE_IS_TRIVIAL 1
+#define YYSTYPE_IS_DECLARED 1
 #endif
-
 
 extern YYSTYPE yylval;
 
-int yyparse (void);
+int yyparse(void);
 
 #endif /* !YY_YY_Y_TAB_H_INCLUDED  */

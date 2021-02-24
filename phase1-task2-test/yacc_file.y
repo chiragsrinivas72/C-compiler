@@ -6,12 +6,18 @@
 int yylex();
 void yyerror(char *);
 void print_table();
+<<<<<<< HEAD
+void check_err();
+=======
+>>>>>>> e0f15208ae0714f5e49e264cf51c85f61da4cd09
 void increment_scope();
 void decrement_scope();
 void insert(char* token,char type,char* value,char* datatype,int line_no);
 extern FILE *yyin;
 extern char *yytext;
 extern int yylineno;
+extern int yyerrstatus = 0;
+int chk=0;
 
 typedef struct symbol_table
 {
@@ -32,7 +38,7 @@ int scope = 0;
 
 %%
 S
-      : START {printf("No syntax errors detected!\n");}
+      : START {check_err();}
       ;
 
 START
@@ -53,6 +59,7 @@ C
       | C LOOPS
       | statement ';'
       | LOOPS
+      | error ';'   {yyerrok; yyclearin; }
       ;
 
 LOOPS
@@ -184,11 +191,29 @@ un_boolop
 
 #include "lex.yy.c"
 
+<<<<<<< HEAD
+void check_err()
+{
+      if(chk != 0)
+      {
+            return;
+      }
+      printf("NO SYNTAX ERRORS DETECTED\n");
+}
+
+void yyerror(char* s)
+{
+  printf("Line %d - %s \n",count,s);
+  //exit(0);
+  chk=1;
+}
+=======
 void yyerror(char* s)
 {
   printf("Line %d - %s \n",count,s);
   exit(0);
 }
+>>>>>>> e0f15208ae0714f5e49e264cf51c85f61da4cd09
 void increment_scope()
 {
       scope+=1;
