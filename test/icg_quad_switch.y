@@ -69,7 +69,7 @@ ELSE_COND
     ;
 
 STMT_SWITCH	
-    : SWITCH{switch_start();} T_op EXP T_cp T_cop SWITCHBODY T_ccp{switch_end();}
+    : SWITCH{switch_start();} T_op EXP T_cp {switch_copy_var();} T_cop SWITCHBODY T_ccp{switch_end();}
 	;
 
 SWITCHBODY	
@@ -222,6 +222,7 @@ int ltop=0;
 int switchlabel[10];
 int switch_lbl = 0;
 int chk = 0;
+char switch_var[20];
 
 int main(int argc,char *args[])
 {
@@ -378,9 +379,15 @@ codegen_assign()
 
     top-=2;
 }
+
 switch_start()
 {
     ++switch_lbl;
+}
+
+switch_copy_var()
+{
+    strcpy(switch_var,st[top]);
 }
 
 case_start()
@@ -389,15 +396,15 @@ case_start()
     sprintf(tmp_i, "%d", temp_i);
     strcat(temp,tmp_i);
 
-    printf("%s = %s == %s\n",temp,st[top-1],st[top]);
+    printf("%s = %s == %s\n",temp,switch_var,st[top]);
     strcpy(st[++top],temp);
 
     q[quadlen].op = (char*)malloc(sizeof(char)*strlen("=="));
-    q[quadlen].arg1 = (char*)malloc(sizeof(char)*strlen(st[top-1]));
+    q[quadlen].arg1 = (char*)malloc(sizeof(char)*strlen(switch_var));
     q[quadlen].arg2 = (char*)malloc(sizeof(char)*strlen(st[top]));
     q[quadlen].res = (char*)malloc(sizeof(char)*strlen(temp));
     strcpy(q[quadlen].op,"==");
-    strcpy(q[quadlen].arg1,st[top-1]);
+    strcpy(q[quadlen].arg1,switch_var);
     strcpy(q[quadlen].arg2,st[top]);
     strcpy(q[quadlen].res,temp);
     quadlen++;
