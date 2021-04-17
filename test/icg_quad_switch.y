@@ -56,7 +56,7 @@ C
 
 LOOPS
     : IF_COND   {if3();}
-    | IF_COND ELSE_COND
+    | IF_COND {ifelse2();} ELSE_COND
     | STMT_SWITCH
     ;
 
@@ -73,7 +73,7 @@ STMT_SWITCH
 	;
 
 SWITCHBODY	
-    : CASES   
+    : CASES
 	| CASES DEFAULTSTMT
 	;
 
@@ -143,16 +143,17 @@ COND  : B {codegen_assigna();}
       | T_not B{codegen_assigna();}
       ;
 
-B : V T_eq{push();}T_eq{push();} LIT
+B : V T_eqeq{push();} LIT{pusha();}
   | V T_gt{push();}F
   | V T_lt{push();}F
-  | V T_not{push();} T_eq{push();} LIT
-  |T_op B T_cp
+  | V T_neq{push();} LIT{pusha();}
+  | V T_lteq{push();} LIT{pusha();}
+  | V T_gteq{push();} LIT{pusha();}
+  | T_op B T_cp
   | V {pushab();}
   ;
 
-F : T_eq{push();}LIT
-  | LIT{pusha();}
+F : LIT{pusha();}
   ;
 
 V : ID{push();}
