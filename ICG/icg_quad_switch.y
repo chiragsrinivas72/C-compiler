@@ -76,7 +76,7 @@ CASES
 
 BREAKSTMT
     : BREAK{case_end();} ';' CASES
-	| CASES 
+	| {case_end_without_break();}CASES 
 	;
 
 DEFAULTSTMT 
@@ -248,11 +248,9 @@ void print_message()
 }
 void yyerror(char *s)
 { 
-    if(strcmp(yytext,":") != 0)
-    {
-        printf("Error : %s at %d \n",yytext,yylineno);
-        chk = 1;
-    }
+    
+    printf("Error : %s at %d \n",yytext,yylineno);
+    chk = 1;
 }
 
 push()
@@ -376,7 +374,6 @@ codegen_assign()
 switch_start()
 {
     ++switch_lbl;
-    printf("%d\n",switch_lbl);
 }
 
 case_start()
@@ -465,6 +462,25 @@ case_end()
     label[++ltop]=lnum;
     ++lnum;
 }
+case_end_without_break()
+{
+    int x = lnum;
+    printf("\nL%d: \n",x);
+    q[quadlen].op = (char*)malloc(sizeof(char)*10);
+    q[quadlen].arg1 = NULL;
+    q[quadlen].arg2 = NULL;
+    q[quadlen].res = (char*)malloc(sizeof(char)*10);
+    strcpy(q[quadlen].op,"Label");
+    char jug1[10];
+    sprintf(jug1,"%d",x);
+    char l1[]="L";
+    strcpy(q[quadlen].res,strcat(l1,jug1));
+    quadlen++;
+
+    label[++ltop]=lnum;
+    ++lnum;
+}
+
 default_end()
 {
     printf("goto next%d\n",switch_lbl);
