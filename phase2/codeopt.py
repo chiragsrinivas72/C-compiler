@@ -1,6 +1,27 @@
 f = open("inp.txt","r")
 print("\n\n")
 
+def better_form(l,st):
+    print("\n")
+    print("ICG Form"+" "+st)
+    print("-----------------------------------")
+    for i in l:
+        if(i[0]=="="):
+            print(i[3],i[0],i[1])
+        elif(i[0] in ["+","-","*","/","==","<=","<",">",">="]):
+            print(i[3],"=",i[1],i[0],i[2])
+        elif(i[0] in ["if","goto","Label","not"]):
+            if(i[0]=="if"):
+                print(i[0],i[1],"goto",i[3])
+            if(i[0]=="goto"):
+                print(i[0],i[3])
+            if(i[0]=="Label"):
+                print(i[3],":")
+            if(i[0]=="not"):
+                print(i[3],"=",i[0],i[1])
+    print("\n")
+
+
 list_of_lines = f.readlines()
 dictValues = dict()
 constantFoldedList = []
@@ -100,9 +121,10 @@ for i in list_of_lines:
         print(op,arg1,arg2,res)
         constantFoldedList.append([op, arg1, arg2, res])
 
+better_form(constantFoldedList,"After Constant Folding -")
 
 print("\n")
-print("After Variable Folding -")
+print("Quadruple Form After Variable Folding -")
 print("------------------------------")
 
 vardict = dict()
@@ -124,10 +146,11 @@ for i in constantFoldedList:
     else:
         print(i[0],i[1],i[2],i[3])
         constantFoldedListvar.append([i[0],i[1],i[2],i[3]])
-        
+better_form(constantFoldedListvar,"After Variable Folding -")
+
 
 print("\n")
-print("After common subexpression elimination - ")
+print("Quadruple form After common subexpression elimination - ")
 print("------------------------------")
 
 firstOccurenceOfRHS = dict()
@@ -192,38 +215,32 @@ for i in csedList:
     res=i[3]
     print(op,arg1,arg2,res)
 
-print("\n")
-print("Constant folded expression - ")
-print("--------------------")
-for i in csedList:
-    if(i[0]=="="):
-        print(i[3],i[0],i[1])
-    elif(i[0] in ["+","-","*","/","==","<=","<",">",">="]):
-        print(i[3],"=",i[1],i[0],i[2])
-    elif(i[0] in ["if","goto","Label","not"]):
-        if(i[0]=="if"):
-            print(i[0],i[1],"goto",i[3])
-        if(i[0]=="goto"):
-            print(i[0],i[3])
-        if(i[0]=="Label"):
-            print(i[3],":")
-        if(i[0]=="not"):
-            print(i[3],"=",i[0],i[1])
+better_form(csedList,"After Common subexpression elimination -")
 
 print("\n")
-print("After dead code elimination - ")
+print("Quadruple Form After dead code elimination - ")
 print("------------------------------")
+ddc = []
+
 for i in csedList:
     if(i[0]=="="):
         pass
     elif(i[0] in ["+","-","*","/","==","<=","<",">",">="]):
-        print(i[3],"=",i[1],i[0],i[2])
+        print(i[0],i[1],i[2],i[3])
+        ddc.append([i[0],i[1],i[2],i[3]])
     elif(i[0] in ["if","goto","Label","not"]):
         if(i[0]=="if"):
-            print(i[0],i[1],"goto",i[3])
+            print(i[0],i[1],i[2],i[3])
+            ddc.append([i[0],i[1],i[2],i[3]])
         if(i[0]=="goto"):
-            print(i[0],i[3])
+            print(i[0],i[1],i[2],i[3])
+            ddc.append([i[0],i[1],i[2],i[3]])
         if(i[0]=="Label"):
-            print(i[3],":")
+            print(i[0],i[1],i[2],i[3])
+            ddc.append([i[0],i[1],i[2],i[3]])
         if(i[0]=="not"):
-            print(i[3], "=", i[0], i[1])
+            print(i[0],i[1],i[2],i[3])
+            ddc.append([i[0],i[1],i[2],i[3]])
+
+print("\n")
+better_form(ddc,"After Dead Code Elimination -")
