@@ -1,4 +1,5 @@
-= 3 NULL a
++ b c a
+= a NULL x
 + a 5 b
 + a b c
 * c e d

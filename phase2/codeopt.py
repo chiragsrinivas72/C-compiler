@@ -1,4 +1,4 @@
-f = open("inp_codeopt.txt","r")
+f = open("inp.txt","r")
 print("\n\n")
 
 list_of_lines = f.readlines()
@@ -99,7 +99,33 @@ for i in list_of_lines:
     else:
         print(op,arg1,arg2,res)
         constantFoldedList.append([op, arg1, arg2, res])
+
+
+print("\n")
+print("After Variable Folding -")
+print("------------------------------")
+
+vardict = dict()
+constantFoldedListvar = []
+
+for i in constantFoldedList:
+    if(i[0] in ["+", "-", "*", "/"]):
+        vardict[i[3]] = [i[0],i[1],i[2]]
+        print(i[0],i[1],i[2],i[3])
+        constantFoldedListvar.append([i[0],i[1],i[2],i[3]])
+    elif(i[0] == "="):
+        if(i[1] in vardict):
+            lst_var = vardict[i[1]]
+            print(lst_var[0],lst_var[1],lst_var[2],i[3])
+            constantFoldedListvar.append([lst_var[0],lst_var[1],lst_var[2],i[3]])
+        else:
+            print(i[0],i[1],i[2],i[3])
+            constantFoldedListvar.append([i[0],i[1],i[2],i[3]])
+    else:
+        print(i[0],i[1],i[2],i[3])
+        constantFoldedListvar.append([i[0],i[1],i[2],i[3]])
         
+
 print("\n")
 print("After common subexpression elimination - ")
 print("------------------------------")
@@ -107,7 +133,7 @@ print("------------------------------")
 firstOccurenceOfRHS = dict()
 toBeReplacedDict = dict()
 
-for i in constantFoldedList:
+for i in constantFoldedListvar:
     if (i[0] in ["+", "-", "*", "/"]):
         op=i[0]
         if (i[1].isnumeric() and i[2].isnumeric()):
@@ -135,7 +161,7 @@ for i in firstOccurenceOfRHS:
 
 csedList = []
 
-for i in constantFoldedList:
+for i in constantFoldedListvar:
     op = i[0]
     arg1 = i[1]
     arg2 = i[2]
