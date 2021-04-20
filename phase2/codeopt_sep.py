@@ -238,11 +238,12 @@ for l in list_of_lines:
         if(i[2] != "NULL" and not(i[2].isdigit())):
             rhs.add(i[2])
 
+
 for l in list_of_lines:
     l = l.strip("\n")
     i = l.split()
     if(i[0]=="="):
-        if(i[1] in rhs):
+        if(i[3] in rhs):
             print(i[3],"=",i[1])
             ddc.append([i[0],i[1],i[2],i[3]])
         else:

@@ -12,21 +12,22 @@ void main()
         {
                 int c = 10;
         }
+
         switch ((10 + 90))
         {
-        case 100: 
-                int b = 3 * 3;
-                break;
-        case 1200:
-                int a = 20;
-                break;
-        default:
-                int d = 5 * 5;
-                break;
+                case 100: 
+                        int b = 3 * 3;
+                        break;
+                case 110:
+                        int a = 20;
+                        break;
+                default:
+                        int d = 5 * 5;
+                        break;
         }
 
 	int x = 3 * 5;
-
+        
         printf("This is the end of the code\n");
 }
 //hello there, this is a comment

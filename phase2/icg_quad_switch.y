@@ -208,6 +208,8 @@ int main(int argc,char *args[])
     yyin = fopen(args[1],"r");
     switch_lbl = -1;
     chk = 0;
+    
+    printf("\n\n");
 
     if(!yyparse())  //yyparse-> 0 if success
     {
@@ -249,7 +251,14 @@ void write_to_file()
     int i;
     for(i=0;i<quadlen;i++)
     {
-        fprintf(ptr,"%s %s %s %s\n",q[i].op,q[i].arg1,q[i].arg2,q[i].res);
+        if(q[i].arg1 == NULL && q[i].arg2 == NULL)
+            fprintf(ptr,"%s NULL NULL %s\n",q[i].op,q[i].res);
+        else if(q[i].arg1 == NULL)
+            fprintf(ptr,"%s NULL %s %s\n",q[i].op,q[i].arg2,q[i].res);
+        else if(q[i].arg2 == NULL)
+            fprintf(ptr,"%s %s NULL %s\n",q[i].op,q[i].arg1,q[i].res);
+        else
+            fprintf(ptr,"%s %s %s %s\n",q[i].op,q[i].arg1,q[i].arg2,q[i].res);
     }
     fclose(ptr);
 }
